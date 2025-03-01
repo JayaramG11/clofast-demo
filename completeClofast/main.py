@@ -8,6 +8,8 @@ from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from apscheduler.triggers.cron import CronTrigger
+import pymongo
+
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -159,3 +161,47 @@ def get_particular_profile(profileId:str):
 def delete_profile(profileId:str):
     res= DOC_PROFILE_MANAGEMENT.delete_one({"profileId":profileId})
     return {"message-key":"profile-deleted"}
+
+@app.get("/get/sotred/data/based/on/conditions")
+def get_sotred_data_based_on_conditions(sort="createdTimeDSC",filter="all"):
+    if filter=="all":
+        if sort=="createdTimeDSC":
+            res=DOC_PROFILE_MANAGEMENT.find({}, {"_id": 0}).sort("createdTime", pymongo.DESCENDING)
+        elif sort=="createdTimeASC":
+            res=DOC_PROFILE_MANAGEMENT.find({}, {"_id": 0}).sort("createdTime", pymongo.ASCENDING)
+        elif sort=="ProfileNameDSC":
+            res=DOC_PROFILE_MANAGEMENT.find({}, {"_id": 0}).sort("profileTitle", pymongo.DESCENDING)
+        elif sort=="ProfileNameASC":
+            res=DOC_PROFILE_MANAGEMENT.find({}, {"_id": 0}).sort("profileTitle", pymongo.ASCENDING)
+        elif sort=="noOfDocumentsDSC":
+            res=DOC_PROFILE_MANAGEMENT.find({}, {"_id": 0}).sort("total_documents", pymongo.DESCENDING)
+        elif sort=="noOfDocumentsASC":
+            res=DOC_PROFILE_MANAGEMENT.find({}, {"_id": 0}).sort("total_documents", pymongo.ASCENDING)
+    elif filter=="active":
+        if sort=="createdTimeDSC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"active"}, {"_id": 0}).sort("createdTime", pymongo.DESCENDING)
+        elif sort=="createdTimeASC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"active"}, {"_id": 0}).sort("createdTime", pymongo.ASCENDING)
+        elif sort=="ProfileNameDSC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"active"}, {"_id": 0}).sort("profileTitle", pymongo.DESCENDING)
+        elif sort=="ProfileNameASC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"active"}, {"_id": 0}).sort("profileTitle", pymongo.ASCENDING)
+        elif sort=="noOfDocumentsDSC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"active"}, {"_id": 0}).sort("total_documents", pymongo.DESCENDING)
+        elif sort=="noOfDocumentsASC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"active"}, {"_id": 0}).sort("total_documents", pymongo.ASCENDING)
+    elif filter=="inactive":
+        if sort=="createdTimeDSC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"inactive"}, {"_id": 0}).sort("createdTime", pymongo.DESCENDING)
+        elif sort=="createdTimeASC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"inactive"}, {"_id": 0}).sort("createdTime", pymongo.ASCENDING)
+        elif sort=="ProfileNameDSC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"inactive"}, {"_id": 0}).sort("profileTitle", pymongo.DESCENDING)
+        elif sort=="ProfileNameASC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"inactive"}, {"_id": 0}).sort("profileTitle", pymongo.ASCENDING)
+        elif sort=="noOfDocumentsDSC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"inactive"}, {"_id": 0}).sort("total_documents", pymongo.DESCENDING)
+        elif sort=="noOfDocumentsASC":
+            res=DOC_PROFILE_MANAGEMENT.find({"status":"inactive"}, {"_id": 0}).sort("total_documents", pymongo.ASCENDING)
+    result=list(res)
+    return result
